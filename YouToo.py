@@ -8,6 +8,9 @@ class YouToo(QMainWindow):
   def __init__(self):
     super().__init__()
 
+    self.init_ui()
+    
+  def init_ui(self):
     # YouTube Link
     self.yt_link = ""
 
@@ -37,6 +40,10 @@ class YouToo(QMainWindow):
 
   def on_button_download(self):
     logging.info("on_button_download pressed")
+    fname = QFileDialog.getExistingDirectory(self, 'Open Directory')
+    
+    if fname:
+      self.le.setText(str(fname))
 
   def on_button_file_name(self):
     text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter your name:')
