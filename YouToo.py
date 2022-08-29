@@ -83,9 +83,31 @@ class YouToo(QMainWindow):
   def on_button_download(self):
     self.win = QMainWindow()
     self.win.setWindowTitle("Download Window")
+
+    self.vbox_download = QVBoxLayout()
+    self.widget_download = QWidget()
+    self.widget_download.setLayout(self.vbox_download)
+    self.win.setCentralWidget(self.widget_download)
+
+    # Progres Bars
+    self.label_individual = QLabel(text="")
+    self.label_total = QLabel(text="")
+    self.progressbar_individual = QProgressBar()
+    self.progressbar_total = QProgressBar()
+
+    # Done Button
+    self.button_done_download = QPushButton(text="Done")
+    self.button_done_download.clicked.connect(lambda x : self.win.close())
+
     # note: for the new window, create two progress bars for description of what is going on and the number of bars left
     # done button on the bottom
     # pop up at the end stating everything how many were downloaded, if any of them have an error, etc
+
+    self.vbox_download.addWidget(self.label_individual)
+    self.vbox_download.addWidget(self.progressbar_individual)
+    self.vbox_download.addWidget(self.label_total)
+    self.vbox_download.addWidget(self.progressbar_total)
+    self.vbox_download.addWidget(self.button_done_download)
     self.win.show()
 
   def on_button_directory(self):
