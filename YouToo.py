@@ -13,10 +13,6 @@ class YouToo(QMainWindow):
     self.init_ui()
 
   def init_ui(self):
-    # Variables
-    self.output_path = ""
-    self.yt_link = ""
-
     # Create Window
     self.setWindowTitle("YouToo")
     #self.setFixedSize(400, 300)
@@ -27,7 +23,16 @@ class YouToo(QMainWindow):
     self.widget.setLayout(self.vbox)
     self.setCentralWidget(self.widget)
 
-    # Directory Box
+    # YouTube Link Grid
+    self.grid_yt_link = QGridLayout()
+
+    self.label_yt_link = QLabel(text="YouTube Link")
+    self.lineedit_yt_link = QLineEdit()
+
+    self.grid_yt_link.addWidget(self.label_yt_link, 0, 0, 1, 1)
+    self.grid_yt_link.addWidget(self.lineedit_yt_link, 1, 0, 1, 1)
+
+    # Directory Grid
     self.grid_directory = QGridLayout()
 
     self.label_directory = QLabel(text="Output Directory")
@@ -40,24 +45,39 @@ class YouToo(QMainWindow):
     self.grid_directory.addWidget(self.lineedit_directory, 1, 0, 1, 2)
     self.grid_directory.addWidget(self.button_directory, 1, 2, 1, 1)
 
-    # File Name & File Extension
+    # File Name & File Extension Grid
     self.grid_fnfe = QGridLayout()
     
-    self.label_fnfe = QLabel(text='File Name & Extension')
+    self.label_fnfe = QLabel(text="File Name & Extension")
     self.lineedit_filename = QLineEdit()
     self.combobox_file_extension = QComboBox()
+
+    self.combobox_file_extension.addItems(["Any", "mp3", "mp4", "webm"])
 
     self.grid_fnfe.addWidget(self.label_fnfe, 0, 0, 1, 1)
     self.grid_fnfe.addWidget(self.lineedit_filename, 1, 0, 1, 2)
     self.grid_fnfe.addWidget(self.combobox_file_extension, 1, 2, 1, 1)
 
-    # Connect events
-    
+    # Audio & Video Grid
+    self.grid_av = QGridLayout()
+
+    self.label_av = QLabel(text="Audio & Video")
+    self.combobox_av = QComboBox()
+
+    self.combobox_av.addItems(["Both", "Audio Only", "Video Only"])
+
+    self.grid_av.addWidget(self.label_av, 0, 0, 1, 1)
+    self.grid_av.addWidget(self.combobox_av, 1, 0, 1, 1)
+
+    # Download
     self.button_download = QPushButton(text = "Download!")
-  
+
     # Add boxes to Window
+    self.vbox.addLayout(self.grid_yt_link)
     self.vbox.addLayout(self.grid_directory)
     self.vbox.addLayout(self.grid_fnfe)
+    self.vbox.addLayout(self.grid_av)
+    self.vbox.addWidget(self.button_download)
 
   def on_button_directory(self):
     logging.info("on_button_directory pressed")
