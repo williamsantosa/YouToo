@@ -21,33 +21,44 @@ class YouToo(QMainWindow):
     self.setWindowTitle("YouToo")
     #self.setFixedSize(400, 300)
 
-    # Set QMainWindow layout to grid
-    self.grid = QGridLayout()
+    # Set QMainWindow layout to vbox
+    self.vbox = QVBoxLayout()
     self.widget = QWidget()
-    self.widget.setLayout(self.grid)
+    self.widget.setLayout(self.vbox)
     self.setCentralWidget(self.widget)
 
-    # Create widgets
+    # Directory Box
+    self.grid_directory = QGridLayout()
+    self.grid_directory.
+
+    self.directory_label = QLabel(text="Output Directory")
+    self.directory = QLineEdit()
+    self.button_directory = QPushButton(text='Select')
+
+    self.button_directory.clicked.connect(self.on_button_directory)
+
+    self.grid_directory.addWidget(self.directory_label, 0, 0, 1, 1)
+    self.grid_directory.addWidget(self.directory, 1, 0, 1, 2)
+    self.grid_directory.addWidget(self.button_directory, 1, 2, 1, 1)
+
+    
+
     self.button_download = QPushButton(text = "Download!")
     self.button_file_name = QPushButton(text = 'File Name')
     self.le = QLabel(text = '')
 
     # Connect events
-    self.button_download.clicked.connect(self.on_button_download)
+    
     self.button_file_name.clicked.connect(self.on_button_file_name)
-    
-    # Add widgets to the screen
-    self.grid.addWidget(self.button_file_name, 0, 0, 1, 1)
-    self.grid.addWidget(self.le, 1, 0, 1, 1)
-    self.grid.addWidget(self.button_download, 2, 0, 1, 1)
+  
+    # Add boxes to Window
+    self.vbox.addLayout(self.grid_directory)
 
-  def on_button_download(self):
-    logging.info("on_button_download pressed")
+  def on_button_directory(self):
+    logging.info("on_button_directory pressed")
     directory = QFileDialog.getExistingDirectory(self, 'Select Directory')
-    
-    if directory:
-      self.output_path = str(directory)
-      self.le.setText(str(directory))
+
+    self.directory.setText(directory)
 
   def on_button_file_name(self):
     text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter your name:')
@@ -119,10 +130,10 @@ def download_youtube(output_path, link, itag=None, filename=None, file_extension
   )
 
   if len(streams) == 0:
-    logging.error('No streams found with given input.')
+    logging.error('No streams found with given inputs.')
     raise RuntimeError
   elif only_audio and only_video:
-    logging.error('Invalid inputs. Cannot input both only_audio and only_video.')
+    logging.error('Invalid inputs. Cannot set both only_audio and only_video to True.')
     raise ValueError
   elif only_audio or file_extension == "mp3":
     streams = streams.order_by('abr')
