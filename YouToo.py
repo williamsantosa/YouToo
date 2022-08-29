@@ -29,36 +29,41 @@ class YouToo(QMainWindow):
 
     # Directory Box
     self.grid_directory = QGridLayout()
-    self.grid_directory.
 
-    self.directory_label = QLabel(text="Output Directory")
-    self.directory = QLineEdit()
+    self.label_directory = QLabel(text="Output Directory")
+    self.lineedit_directory = QLineEdit()
     self.button_directory = QPushButton(text='Select')
 
     self.button_directory.clicked.connect(self.on_button_directory)
 
-    self.grid_directory.addWidget(self.directory_label, 0, 0, 1, 1)
-    self.grid_directory.addWidget(self.directory, 1, 0, 1, 2)
+    self.grid_directory.addWidget(self.label_directory, 0, 0, 1, 1)
+    self.grid_directory.addWidget(self.lineedit_directory, 1, 0, 1, 2)
     self.grid_directory.addWidget(self.button_directory, 1, 2, 1, 1)
 
+    # File Name & File Extension
+    self.grid_fnfe = QGridLayout()
     
+    self.label_fnfe = QLabel(text='File Name & Extension')
+    self.lineedit_filename = QLineEdit()
+    self.combobox_file_extension = QComboBox()
 
-    self.button_download = QPushButton(text = "Download!")
-    self.button_file_name = QPushButton(text = 'File Name')
-    self.le = QLabel(text = '')
+    self.grid_fnfe.addWidget(self.label_fnfe, 0, 0, 1, 1)
+    self.grid_fnfe.addWidget(self.lineedit_filename, 1, 0, 1, 2)
+    self.grid_fnfe.addWidget(self.combobox_file_extension, 1, 2, 1, 1)
 
     # Connect events
     
-    self.button_file_name.clicked.connect(self.on_button_file_name)
+    self.button_download = QPushButton(text = "Download!")
   
     # Add boxes to Window
     self.vbox.addLayout(self.grid_directory)
+    self.vbox.addLayout(self.grid_fnfe)
 
   def on_button_directory(self):
     logging.info("on_button_directory pressed")
     directory = QFileDialog.getExistingDirectory(self, 'Select Directory')
 
-    self.directory.setText(directory)
+    self.lineedit_directory.setText(directory)
 
   def on_button_file_name(self):
     text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter your name:')
