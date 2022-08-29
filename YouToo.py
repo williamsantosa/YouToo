@@ -70,7 +70,8 @@ class YouToo(QMainWindow):
     self.grid_av.addWidget(self.combobox_av, 1, 0, 1, 1)
 
     # Download
-    self.button_download = QPushButton(text = "Download!")
+    self.button_download = QPushButton(text = "Download")
+    self.button_download.clicked.connect(self.on_button_download)
 
     # Add boxes to Window
     self.vbox.addLayout(self.grid_yt_link)
@@ -79,17 +80,17 @@ class YouToo(QMainWindow):
     self.vbox.addLayout(self.grid_av)
     self.vbox.addWidget(self.button_download)
 
+  def on_button_download(self):
+    self.win = QMainWindow()
+    self.win.setWindowTitle("Download Window")
+    # note: for the new window, create two progress bars for description of what is going on and the number of bars left
+    # done button on the bottom
+    # pop up at the end stating everything how many were downloaded, if any of them have an error, etc
+    self.win.show()
+
   def on_button_directory(self):
-    logging.info("on_button_directory pressed")
     directory = QFileDialog.getExistingDirectory(self, 'Select Directory')
-
     self.lineedit_directory.setText(directory)
-
-  def on_button_file_name(self):
-    text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter your name:')
-
-    if ok:
-      self.le.setText(str(text))
 
 ## Helper Functions
 
