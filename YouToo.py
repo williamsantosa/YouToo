@@ -1,8 +1,10 @@
 import pytube as pt, sys
 import logging
 from pytube import YouTube
+from pytube.contrib.playlist import Playlist
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtWidgets import *
+import time
 
 ## User Interface Functions
 
@@ -89,26 +91,68 @@ class YouToo(QMainWindow):
     self.widget_download.setLayout(self.vbox_download)
     self.win.setCentralWidget(self.widget_download)
 
-    # Progres Bars
+    # Progress Bars
     self.label_individual = QLabel(text="")
     self.label_total = QLabel(text="")
     self.progressbar_individual = QProgressBar()
+    self.progressbar_individual.setRange(0, 3)
     self.progressbar_total = QProgressBar()
 
     # Done Button
     self.button_done_download = QPushButton(text="Done")
     self.button_done_download.clicked.connect(lambda x : self.win.close())
 
-    # note: for the new window, create two progress bars for description of what is going on and the number of bars left
-    # done button on the bottom
-    # pop up at the end stating everything how many were downloaded, if any of them have an error, etc
-
+    # Add widgets
     self.vbox_download.addWidget(self.label_individual)
     self.vbox_download.addWidget(self.progressbar_individual)
     self.vbox_download.addWidget(self.label_total)
     self.vbox_download.addWidget(self.progressbar_total)
     self.vbox_download.addWidget(self.button_done_download)
     self.win.show()
+
+    app.processEvents()
+
+    yt_link = self.lineedit_yt_link.text().strip()
+    if "https://www.youtube.com/playlist?list=" in yt_link:
+      download_list = Playlist(yt_link).video_urls
+    elif "https://www.youtube.com/watch?v=" in yt_link:
+      download_list = [yt_link]
+    
+    # Set variables
+    output_path = self.lineedit_directory.text()
+    if len(output_path) == 0:
+      return
+    filename = None if len(self.lineedit_filename.text()) == 0 else self.lineedit_filename.text()
+    file_extension = None if self.combobox_file_extension.currentText() == "Any" else self.combobox_file_extension.currentText()
+    if self.combobox_av.currentText() == "Both":
+      only_audio = False
+      only_video = False
+    elif self.combobox_av.currentText() == "Audio Only":
+      only_audio = True
+      only_video = False
+    elif self.combobox_av.currentText() == "Video Only":
+      only_audio = False
+      only_video = True
+
+    self.progressbar_total.setRange(0, len(download_list))
+    val_total = 0
+    for link in download_list:
+      app.processEvents()
+      self.label_total.setText(f"Beginning download for {link}...")
+      download_youtube(
+        output_path=output_path,
+        link=link,
+        filename=filename,
+        file_extension=file_extension,
+        only_audio=only_audio,
+        only_video=only_video,
+        var_progress=self.progressbar_individual,
+        var_label=self.label_individual
+      )
+
+      self.label_total.setText(f"Finished download for {link}.")
+      val_total += 1
+      self.progressbar_total.setValue(val_total)
 
   def on_button_directory(self):
     directory = QFileDialog.getExistingDirectory(self, 'Select Directory')
@@ -136,38 +180,37 @@ def list_abr(streams):
 
 ## Core Functions
 
-def download_youtube(output_path, link, itag=None, filename=None, file_extension=None, abr=None, resolution=None, only_audio=False, only_video=False):
+def download_youtube(output_path, link, yt=None, filename=None, file_extension=None, abr=None, resolution=None, only_audio=False, only_video=False, var_progress=None, var_label=None):
   """
   Downloads YouTube video from link into the output_path specified.
 
   :param output_path (str): path where the file will be outputted
   :param link (str): YouTube video link
-  :param itag (int): stream itag to download, optional
+  :param yt (YouTube): YouTube object to download in place of link
   :param filename (str): name of the file to download
   :param file_extension (str): extension of the file to search for and download
   :param abr (str): average bit rate, e.g 140kbs
   :param resolution (str): resolution of the video, e.g 144p
   :param only_audio (bool): searches only for audio
   :param only_video (bool): searches only for videos
+  :param var_progress (QProgressBar): Progress bar to update 
+  :param var_label (QLabel): Label to update
   :return: none
   """
-  try:
-    yt = YouTube(link)
-  except:
-    logging.error(f'Could not create YouTube object with link: {link}. Check internet connection.')
-    raise RuntimeError
-  
-  if itag:
+  if var_progress and var_label:
+    var_label.setText(f'Beginning download...')
+    var_progress.reset()
+
+  if not yt:
     try:
-      stream = yt.streams.get_by_itag(itag)
-      if filename and file_extension:
-        stream.download(output_path, f"{filename}.{file_extension}")
-      else:
-        stream.download(output_path)
+      yt = YouTube(link)
     except:
-      logging.error(f'Error occurred when downloading {link} with itag {itag}.')
+      logging.error(f'Could not create YouTube object with link: {link}. Check internet connection.')
       raise RuntimeError
-    return
+
+  if var_progress and var_label:
+    var_label.setText(f'Created YouTube object with {yt.title}...')
+    var_progress.setValue(1)
 
   streams = yt.streams.filter(
     file_extension=file_extension,
@@ -188,7 +231,12 @@ def download_youtube(output_path, link, itag=None, filename=None, file_extension
   elif only_video:
     streams = streams.order_by('resolution')
   else:
+    streams = streams.order_by('abr')
     streams = streams.order_by('resolution')
+
+  if var_progress and var_label:
+    var_label.setText(f'Finished checking for streams...')
+    var_progress.setValue(2)
 
   stream = yt.streams.get_by_itag(int(streams[-1].itag))
   try:
@@ -199,6 +247,10 @@ def download_youtube(output_path, link, itag=None, filename=None, file_extension
   except:
     logging.error(f'Error occurred when downloading {link} with itag {itag}.')
     raise RuntimeError
+
+  if var_progress and var_label:
+    var_label.setText(f'Finished downloading video.')
+    var_progress.setValue(3)
 
 ## Main Function
 
