@@ -101,6 +101,7 @@ class YouToo(QMainWindow):
     # Done Button
     self.button_done_download = QPushButton(text="Done")
     self.button_done_download.clicked.connect(lambda x : self.win.close())
+    self.button_done_download.setDisabled(True)
 
     # Add widgets
     self.vbox_download.addWidget(self.label_individual)
@@ -162,6 +163,7 @@ class YouToo(QMainWindow):
       self.label_total.setText(f"Finished download for {link}.")
       val_total += 1
       self.progressbar_total.setValue(val_total)
+    self.button_done_download.setDisabled(False)
 
   def on_button_directory(self):
     directory = QFileDialog.getExistingDirectory(self, 'Select Directory')
