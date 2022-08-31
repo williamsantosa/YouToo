@@ -233,10 +233,26 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
   :param var_label (QLabel): Label to update
   :return: none
   """
-  if var_progress and var_label:
-    var_label.setText(f'Beginning download...')
-    var_progress.reset()
+  def update(var_progress, var_label, text, value):
+    """
+    Update the progress bar and text
 
+    :param var_progress (QProgressBar): Progress bar to update 
+    :param var_label (QLabel): Label to update
+    :param text: text to set var_label to
+    :param value: value of the progress bar
+    :return: none
+    """
+    if var_progress and var_label:
+      var_label.setText(text)
+      var_progress.setValue(value)
+      app.processEvents()
+
+  # Update progress bar
+  var_progress.reset()
+  update(var_progress, var_label, 'Beginning download...', 0)
+
+  # Create YouTube object
   if not yt:
     try:
       yt = YouTube(link)
@@ -246,10 +262,10 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
       app.processEvents()
       return
 
-  if var_progress and var_label:
-    var_label.setText(f'Created YouTube object with {yt.title}...')
-    var_progress.setValue(1)
+  # Update progress bar
+  update(var_progress, var_label, f'Created YouTube object with {yt.title}...', 1)
 
+  # Filter streams
   streams = yt.streams.filter(
     file_extension=file_extension,
     abr=abr,
@@ -277,17 +293,20 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
     streams = streams.order_by('resolution')
 
   # Increment progress bar
-  if var_progress and var_label:
-    var_label.setText(f'Finished checking for streams...')
-    var_progress.setValue(2)
+  update(var_progress, var_label, 'Finished checking for streams...', 2)
 
   # Get stream and file extension
   stream = yt.streams.get_by_itag(int(streams[-1].itag))
   mime = stream.mime_type
   file_extension = mime[mime.find('/')+1:]
 
+  # Update progress bar
+  update(var_progress, var_label, 'Obtained stream and file extension...', 2)
+  
   # Download file
   try:
+    # Update progress bar
+    update(var_progress, var_label, 'Attempting to download...', 2)
     if filename and file_extension:
       stream.download(output_path, f"{filename}.{file_extension}")
     else:
@@ -298,9 +317,7 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
     return
 
   # Increment progress bar
-  if var_progress and var_label:
-    var_label.setText(f'Finished downloading video.')
-    var_progress.setValue(3)
+  update(var_progress, var_label, 'Finished downloading video.', 3)
 
 ## Main Function
 
