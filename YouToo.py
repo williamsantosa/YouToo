@@ -1,10 +1,9 @@
+import time, logging, os
 import pytube as pt, sys
-import logging
 from pytube import YouTube
 from pytube.contrib.playlist import Playlist
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtWidgets import *
-import time
 
 ## User Interface Functions
 
@@ -17,7 +16,7 @@ class YouToo(QMainWindow):
   def init_ui(self):
     # Create Window
     self.setWindowTitle("YouToo")
-    #self.setFixedSize(400, 300)
+    self.setFixedSize(230, 250)
 
     # Set QMainWindow layout to vbox
     self.vbox = QVBoxLayout()
@@ -86,6 +85,7 @@ class YouToo(QMainWindow):
     # Generate Window
     self.win = QMainWindow()
     self.win.setWindowTitle("Download Window")
+    self.win.setFixedSize(700, 150)
     self.vbox_download = QVBoxLayout()
     self.widget_download = QWidget()
     self.widget_download.setLayout(self.vbox_download)
@@ -120,12 +120,12 @@ class YouToo(QMainWindow):
     elif "https://www.youtube.com/watch?v=" in yt_link:
       download_list = [yt_link]
     else:
-      ErrorDialog("YouTube Link Error", f"Invalid YouTube link: {yt_link}")
+      self.error = ErrorDialog("YouTube Link Error", f"Invalid YouTube link: {yt_link}")
       return
 
     output_path = self.lineedit_directory.text().strip()
-    if len(output_path) == 0:
-      ErrorDialog("Output Path Error", f"Invalid output path: {output_path}")
+    if len(output_path) == 0 or not os.path.isdir(output_path):
+      self.error = ErrorDialog("Output Path Error", f"Invalid output path: {output_path}")
       return
     
     if self.combobox_av.currentText() == "Both":
@@ -141,8 +141,11 @@ class YouToo(QMainWindow):
     filename = None if len(self.lineedit_filename.text()) == 0 or len(download_list) > 1 else self.lineedit_filename.text()
     file_extension = None if self.combobox_file_extension.currentText() == "Any" else self.combobox_file_extension.currentText()
 
+    # Create progres bar
     self.progressbar_total.setRange(0, len(download_list))
     val_total = 0
+
+    # Download each link in the list
     for link in download_list:
       app.processEvents()
       self.label_total.setText(f"Beginning download for {link}...")
@@ -156,7 +159,6 @@ class YouToo(QMainWindow):
         var_progress=self.progressbar_individual,
         var_label=self.label_individual
       )
-
       self.label_total.setText(f"Finished download for {link}.")
       val_total += 1
       self.progressbar_total.setValue(val_total)
@@ -240,7 +242,7 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
       yt = YouTube(link)
     except:
       logging.error(f'Could not create YouTube object with link: {link}. Check internet connection.')
-      ErrorDialog("YouTube Error", f"YouTube object not created with {link}.")
+      self.error = ErrorDialog("YouTube Error", f"YouTube object not created with {link}.")
       app.processEvents()
       return
 
@@ -258,12 +260,12 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
 
   if len(streams) == 0:
     logging.error('No streams found with given inputs.')
-    ErrorDialog("Stream Error", f"No streams found with file extension \"{file_extension}\" for {link}.")
+    self.error = ErrorDialog("Stream Error", f"No streams found with file extension \"{file_extension}\" for {link}.")
     app.processEvents()
     return
   elif only_audio and only_video:
     logging.error('Invalid inputs. Cannot set both only_audio and only_video to True.')
-    ErrorDialog("Input Error", "Please fix. Cannot set both only_audio and only_video to True.")
+    self.error = ErrorDialog("Input Error", "Please fix. Cannot set both only_audio and only_video to True.")
     app.processEvents()
     return
   elif only_audio or file_extension == "mp3":
@@ -274,11 +276,17 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
     streams = streams.order_by('abr')
     streams = streams.order_by('resolution')
 
+  # Increment progress bar
   if var_progress and var_label:
     var_label.setText(f'Finished checking for streams...')
     var_progress.setValue(2)
 
+  # Get stream and file extension
   stream = yt.streams.get_by_itag(int(streams[-1].itag))
+  mime = stream.mime_type
+  file_extension = mime[mime.find('/')+1:]
+
+  # Download file
   try:
     if filename and file_extension:
       stream.download(output_path, f"{filename}.{file_extension}")
@@ -286,9 +294,10 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
       stream.download(output_path)
   except:
     logging.error(f'Error occurred when downloading {link} with itag {itag}.')
-    ErrorDialog("Stream Download Error", f"Error occurred when downloading {link} with {itag}.")
+    self.error = ErrorDialog("Stream Download Error", f"Error occurred when downloading {link} with {itag}.")
     return
 
+  # Increment progress bar
   if var_progress and var_label:
     var_label.setText(f'Finished downloading video.')
     var_progress.setValue(3)
