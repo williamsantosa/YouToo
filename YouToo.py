@@ -4,7 +4,7 @@ from pytube import YouTube
 from pytube.contrib.playlist import Playlist
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtWidgets import *
-
+from PyQt6.QtGui import QAction, QIcon
 ## User Interface Functions
 
 class YouToo(QMainWindow):
@@ -16,7 +16,7 @@ class YouToo(QMainWindow):
   def init_ui(self):
     # Create Window
     self.setWindowTitle("YouToo")
-    self.setFixedSize(230, 250)
+    self.setFixedSize(230, 270)
 
     # Set QMainWindow layout to vbox
     self.vbox = QVBoxLayout()
@@ -78,12 +78,26 @@ class YouToo(QMainWindow):
     self.button_download = QPushButton(text = "Download")
     self.button_download.clicked.connect(self.on_button_download)
 
-    # Add boxes to Window
+    # Menu bar
+    self.toolbar_menu = QToolBar()
+    self.toolbar_menu.setFloatable(False)
+    self.toolbar_menu.setMovable(False)
+
+    # Create menu bar actions
+    self.button_mfile = QAction("File", self)
+    self.button_mfile.setStatusTip("This is your button")
+    #self.button_mfile.triggered.connect(self.onMyToolBarButtonClick)
+
+    # Add menu bar actions
+    self.toolbar_menu.addAction(self.button_mfile)
+
+    # Add widgets to Window
     self.vbox.addLayout(self.grid_yt_link)
     self.vbox.addLayout(self.grid_directory)
     self.vbox.addLayout(self.grid_fnfe)
     self.vbox.addLayout(self.grid_av)
     self.vbox.addWidget(self.button_download)
+    self.addToolBar(self.toolbar_menu)
 
   def on_button_download(self):
     # Generate Window
