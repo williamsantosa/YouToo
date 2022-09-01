@@ -39,6 +39,8 @@ class YouToo(QMainWindow):
     self.label_directory = QLabel(text="Output Directory")
     self.lineedit_directory = QLineEdit()
     self.button_directory = QPushButton(text='Select')
+    self.lineedit_directory.setFixedWidth(145)
+    self.button_directory.setFixedWidth(60)
 
     self.button_directory.clicked.connect(self.on_button_directory)
 
@@ -52,6 +54,8 @@ class YouToo(QMainWindow):
     self.label_fnfe = QLabel(text="File Name & Extension")
     self.lineedit_filename = QLineEdit()
     self.combobox_file_extension = QComboBox()
+    self.lineedit_filename.setFixedWidth(145)
+    self.combobox_file_extension.setFixedWidth(60)
 
     self.combobox_file_extension.addItems(["Any", "mp3", "mp4", "webm"])
 
@@ -118,15 +122,15 @@ class YouToo(QMainWindow):
     yt_link = self.lineedit_yt_link.text().strip()
     if "https://www.youtube.com/playlist?list=" in yt_link:
       download_list = Playlist(yt_link).video_urls
-    elif "https://www.youtube.com/watch?v=" in yt_link:
+    elif "https://www.youtube.com/watch?v=" in yt_link or "https://youtu.be/" in yt_link:
       download_list = [yt_link]
     else:
-      self.error = ErrorDialog("YouTube Link Error", f"Invalid YouTube link: {yt_link}")
+      error = ErrorDialog("YouTube Link Error", f"Invalid YouTube link: {yt_link}")
       return
 
     output_path = self.lineedit_directory.text().strip()
     if len(output_path) == 0 or not os.path.isdir(output_path):
-      self.error = ErrorDialog("Output Path Error", f"Invalid output path: {output_path}")
+      error = ErrorDialog("Output Path Error", f"Invalid output path: {output_path}")
       return
     
     if self.combobox_av.currentText() == "Both":
@@ -260,7 +264,7 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
       yt = YouTube(link)
     except:
       logging.error(f'Could not create YouTube object with link: {link}. Check internet connection.')
-      self.error = ErrorDialog("YouTube Error", f"YouTube object not created with {link}.")
+      error = ErrorDialog("YouTube Error", f"YouTube object not created with {link}.")
       app.processEvents()
       return
 
@@ -278,12 +282,12 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
 
   if len(streams) == 0:
     logging.error('No streams found with given inputs.')
-    self.error = ErrorDialog("Stream Error", f"No streams found with file extension \"{file_extension}\" for {link}.")
+    error = ErrorDialog("Stream Error", f"No streams found with file extension \"{file_extension}\" for {link}.")
     app.processEvents()
     return
   elif only_audio and only_video:
     logging.error('Invalid inputs. Cannot set both only_audio and only_video to True.')
-    self.error = ErrorDialog("Input Error", "Please fix. Cannot set both only_audio and only_video to True.")
+    error = ErrorDialog("Input Error", "Please fix. Cannot set both only_audio and only_video to True.")
     app.processEvents()
     return
   elif only_audio or file_extension == "mp3":
@@ -315,7 +319,7 @@ def download_youtube(output_path, link, yt=None, filename=None, file_extension=N
       stream.download(output_path)
   except:
     logging.error(f'Error occurred when downloading {link} with itag {itag}.')
-    self.error = ErrorDialog("Stream Download Error", f"Error occurred when downloading {link} with {itag}.")
+    error = ErrorDialog("Stream Download Error", f"Error occurred when downloading {link} with {itag}.")
     return
 
   # Increment progress bar
