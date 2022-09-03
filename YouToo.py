@@ -79,17 +79,21 @@ class YouToo(QMainWindow):
     self.button_download.clicked.connect(self.on_button_download)
 
     # Menu bar
-    self.toolbar_menu = QToolBar()
-    self.toolbar_menu.setFloatable(False)
-    self.toolbar_menu.setMovable(False)
+    self.menu = self.menuBar()
 
-    # Create menu bar actions
-    self.button_mfile = QAction("File", self)
-    self.button_mfile.setStatusTip("This is your button")
-    #self.button_mfile.triggered.connect(self.onMyToolBarButtonClick)
+    # Create menu bar categories
+    self.menu_file = self.menu.addMenu("File")
+    self.menu_help = self.menu.addMenu("Help")
 
-    # Add menu bar actions
-    self.toolbar_menu.addAction(self.button_mfile)
+    # Create actions
+    self.button_mexit = QAction("Exit", self)
+    self.button_mhelp = QAction("Help", self)
+
+    # Add actions
+    self.menu_file.addAction(self.button_mexit)
+    self.menu_file.triggered.connect(self.close)
+    self.menu_help.addAction(self.button_mhelp)
+    self.menu_help.triggered.connect(self.on_menu_help)
 
     # Add widgets to Window
     self.vbox.addLayout(self.grid_yt_link)
@@ -97,7 +101,19 @@ class YouToo(QMainWindow):
     self.vbox.addLayout(self.grid_fnfe)
     self.vbox.addLayout(self.grid_av)
     self.vbox.addWidget(self.button_download)
-    self.addToolBar(self.toolbar_menu)
+
+  def on_menu_help(self):
+    # Generate Window
+    self.win = QMainWindow()
+    self.win.setWindowTitle("Help Window")
+    self.win.setFixedSize(300, 500)
+    self.vbox_help = QVBoxLayout()
+    self.widget_help = QWidget()
+    self.widget_help.setLayout(self.vbox_help)
+    self.win.setCentralWidget(self.widget_help)
+
+    # Show menu
+    self.win.show()
 
   def on_button_download(self):
     # Generate Window
