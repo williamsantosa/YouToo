@@ -1,10 +1,10 @@
-import time, logging, os
-import pytube as pt, sys
+import time, logging, os, sys
+import pytube as pt
 from pytube import YouTube
 from pytube.contrib.playlist import Playlist
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtGui import *
 ## User Interface Functions
 
 class YouToo(QMainWindow):
@@ -106,14 +106,25 @@ class YouToo(QMainWindow):
     # Generate Window
     self.win = QMainWindow()
     self.win.setWindowTitle("Help Window")
-    self.win.setFixedSize(300, 500)
+    self.win.setFixedSize(300, 200)
     self.vbox_help = QVBoxLayout()
     self.widget_help = QWidget()
     self.widget_help.setLayout(self.vbox_help)
     self.win.setCentralWidget(self.widget_help)
 
+    # Place content into help
+    help_text = ""
+    self.label_help = QLabel(text=help_text)
+    self.button_done_help = QPushButton(text="Done")
+    self.button_done_help.clicked.connect(self.win.close)
+
+    # Add to vbox
+    self.vbox_help.addWidget(self.label_help)
+    self.vbox_help.addWidget(self.button_done_help)
+
     # Show menu
     self.win.show()
+    app.processEvents()
 
   def on_button_download(self):
     # Generate Window
