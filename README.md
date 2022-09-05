@@ -1,6 +1,6 @@
 # YouToo
 
-Program that downloads YouTube videos to your computer for the purpose of quick and easy media acquisition.
+Program that downloads YouTube videos for the purpose of quick and easy media acquisition.
 
 ## Setup
 
