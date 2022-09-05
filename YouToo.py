@@ -17,6 +17,7 @@ class YouToo(QMainWindow):
     # Create Window
     self.setWindowTitle("YouToo")
     self.setFixedSize(230, 270)
+    self.setWindowIcon(QIcon('assets/icon.png'))
 
     # Set QMainWindow layout to vbox
     self.vbox = QVBoxLayout()
@@ -87,7 +88,9 @@ class YouToo(QMainWindow):
 
     # Create actions
     self.button_mexit = QAction("Exit", self)
+    self.button_mexit.setIcon(QIcon("assets/exit.png"))
     self.button_mhelp = QAction("Help", self)
+    self.button_mhelp.setIcon(QIcon("assets/help.png"))
 
     # Add actions
     self.menu_file.addAction(self.button_mexit)
@@ -107,13 +110,15 @@ class YouToo(QMainWindow):
     self.win = QMainWindow()
     self.win.setWindowTitle("Help Window")
     self.win.setFixedSize(400, 350)
+    self.win.setWindowIcon(QIcon("assets/help.png"))
     self.vbox_help = QVBoxLayout()
     self.widget_help = QWidget()
     self.widget_help.setLayout(self.vbox_help)
     self.win.setCentralWidget(self.widget_help)
 
     # Place content into help
-    help_text = """
+    help_text = (
+    """
     Description
     YouToo is a program that downloads YouTube videos to your 
     computer for the purpose of quick and easy media acquisition.
@@ -132,6 +137,7 @@ class YouToo(QMainWindow):
     2. If no streams with the extension is found, an error message will
        appear. Select another extension and try again.
     """
+    )
     self.label_help = QLabel(text=help_text)
     self.button_done_help = QPushButton(text="Done")
     self.button_done_help.clicked.connect(self.win.close)
