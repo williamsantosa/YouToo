@@ -2,6 +2,10 @@
 
 Program that downloads YouTube videos to your computer for the purpose of quick and easy media acquisition.
 
+## Setup
+
+Ensure that you have Python v3.10.5+. If python is not installed on your system or is outdated, follow these steps for [Windows](https://www.python.org/downloads/) and for [Unix](https://docs.python.org/3/using/unix.html). After completed, install the dependencies via using `pip` or another Python package installer.
+
 ## Usage
 
 1. To open the graphical user interface:
