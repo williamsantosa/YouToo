@@ -4,10 +4,13 @@ Program that downloads YouTube videos to your computer for the purpose of quick 
 
 ## Usage
 
-1. Enter a valid YouTube link containing a public video/playlist.
-2. Select an output directory for the files to be downloaded to.
-3. Enter the file name and the downloaded video's extension.
-4. Select both, audio only, or video only, depending on your preference.
+1. To open the graphical user interface:
+   1. If poetry is installed, run via the command `poetry run python YouToo.py`.
+   2. Else, run via `python YouToo.py` after installing dependencies.
+2. Enter a valid YouTube link containing a public video/playlist.
+3. Select an output directory for the files to be downloaded to.
+4. Enter the file name and the downloaded video's extension.
+5. Select both, audio only, or video only, depending on your preference.
 
 ## Notes
 
