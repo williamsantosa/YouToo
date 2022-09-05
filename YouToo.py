@@ -106,14 +106,32 @@ class YouToo(QMainWindow):
     # Generate Window
     self.win = QMainWindow()
     self.win.setWindowTitle("Help Window")
-    self.win.setFixedSize(300, 200)
+    self.win.setFixedSize(400, 350)
     self.vbox_help = QVBoxLayout()
     self.widget_help = QWidget()
     self.widget_help.setLayout(self.vbox_help)
     self.win.setCentralWidget(self.widget_help)
 
     # Place content into help
-    help_text = ""
+    help_text = """
+    Description
+    YouToo is a program that downloads YouTube videos to your 
+    computer for the purpose of quick and easy media acquisition.
+
+    Usage
+    1. Enter a valid YouTube link containing a public video/playlist.
+    2. Select an output directory for the files to be downloaded to.
+    3. Enter the file name and the downloaded video's extension.
+    4. Select both, audio only, or video only, depending on your
+       preference.
+
+    Notes
+    1. If a playlist is provided the file name entered will be ignored.
+       Download videos sequentially to name each one, or download all
+       then rename them.
+    2. If no streams with the extension is found, an error message will
+       appear. Select another extension and try again.
+    """
     self.label_help = QLabel(text=help_text)
     self.button_done_help = QPushButton(text="Done")
     self.button_done_help.clicked.connect(self.win.close)
