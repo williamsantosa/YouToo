@@ -4,7 +4,11 @@ Program that downloads YouTube videos for the purpose of quick and easy media ac
 
 ## Setup
 
-Ensure that you have Python v3.10.5+. If python is not installed on your system or is outdated, follow these steps for [Windows](https://www.python.org/downloads/) and for [Unix](https://docs.python.org/3/using/unix.html). After completed, install the dependencies via using `pip` or another Python package installer.
+Check releases and download the release that you want to use. 
+
+For the executable version, enter the `dist` folder and run the program via the executable (`YouToo.exe`) file.
+
+Alternatively, to run via Python, ensure that you have Python v3.10.5+. If python is not installed on your system or is outdated, follow these steps for [Windows](https://www.python.org/downloads/) and for [Unix](https://docs.python.org/3/using/unix.html). After completed, install the dependencies via using `pip` or another Python package installer.
 
 ## Usage
 
